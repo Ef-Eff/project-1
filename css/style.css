@@ -1,3 +1,14 @@
 body {
+  background-color: orange;
+  text-align: center;
+}
+
+section.player1 {
+  position: relative;
+  top: 530px;
+  margin: 0 auto;
   background-color: red;
+  width: 900px;
+  padding-top: 10px;
+  height: 180px;
 }
