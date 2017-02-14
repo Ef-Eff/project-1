@@ -1,14 +1,115 @@
+20* {
+  box-sizing: border-box;
+}
+
 body {
+  background-color: FireBrick;
+  text-align: center;
+}
+div.player1, div.player2, div.scrambler {
+  position: absolute;
+  width: 760px;
+  border-radius: 5px;
+  border: 2px solid black;
+}
+
+
+.scoreboard {
+  float: right;
+  display: block;
+  margin-right: 30px;
+  margin-top: 30px;
+  border-radius: 2px;
+  background-color: red;
+  border: 1px solid black;
+  border-bottom: 0px;
+}
+.scoreboard > div {
+  display: block;
+  float: left;
+  width: 99px;
+  border: 1px solid black;
+}
+
+.scoreboard > div > span {
+  display: block;
+  text-align: left;
+  border-bottom: 1px solid black;
+  padding: 3px;
+  transition: background-color .2s;
+}
+
+img {
+  display: inline-block;
+  padding: 1px;
+  border-radius: 6px;
+}
+
+
+div.player1 {
+  bottom: 0;
+  left: 4%;
+  padding-top: 10px;
+  background-color: red;
+  height: 150px;
+}
+
+div.player2 {
+  top: 0;
+  padding-top: 10px;
+  left: 4%;
+  padding-bottom: 10px;
+  background-color: red;
+  height: 150px;
+}
+
+.scrambler {
+  top: 50%;
+  padding-top: 10px;
+  left: 4%;
+  background-color: green;
+  transform: translate(0%, -50%);
+  height: 190px;
+}
+
+button {
+  display: block;
+  position: relative;
+  left: 47%;
+  transform: translate(-50%, 0%);
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+.green {
+  background-color: green;
+  transition: background-color .2s;
+}
+
+.green:hover {
+  background-color: lightgreen;
+}
+
+#completed {
+  font-weight: bold;
   background-color: orange;
+}
+
+#categories {
+  width: 123px;
+}
+
+#score1 > span, #score2 > span {
   text-align: center;
 }
 
-section.player1 {
-  position: relative;
-  top: 530px;
-  margin: 0 auto;
-  background-color: red;
-  width: 900px;
-  padding-top: 10px;
-  height: 180px;
+
+#fail {
+  background-color: yellow;
+  font-weight: bold;
+}
+
+#p1, #p2 {
+  display: block;
+  margin-bottom: 3px;
 }
