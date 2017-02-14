@@ -438,7 +438,7 @@ $(() => {
       $p2on.off();
     }
     turn++;
-    if (turn === 3) {
+    if (turn === 26) {
       tallyScores();
     }
   }
