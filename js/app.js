@@ -8,9 +8,19 @@ function arrayToInt(array) {
   });
 }
 
+function bonusCalc(array) {
+  array = arrayToInt(array);
+  array = array.splice(Number, 6);
+  return arraySum(array);
+}
+
 function removeValue(array, value) {
-  const regex = new RegExp(value, 'g');
-  return array.join('').replace(regex, '').split('');
+  for(var i = array.length; i--;){
+    if (array[i] === value) {
+      array.splice(i, 1);
+    }
+  }
+  return array;
 }
 
 function arraySum(array) {
@@ -77,7 +87,11 @@ $(() => {
   const $image5 = $('#1fifth');
   const $button = $('button');
   const $rolls = $('#rolls');
-  let score = 0;
+  const $bonus1 = $('.bonus.p1');
+  const $bonus2 = $('.bonus.p2');
+  const $upper1 = $('.upper.p1');
+  const $upper2 = $('.upper.p2');
+  let turn = 0;
   let rollsLeft = $rolls.text();
   let $p1on = $('.p1.on');
   let $p2on = $('.p2.on');
@@ -95,8 +109,8 @@ $(() => {
   let $smallStraight = $('.smallStraight');
   let $largeStraight = $('.largeStraight');
   let $chance = $('.chance');
-  let $total1 = $('.grandtotal.p1');
-  let $total2 = $('.grandtotal.p2');
+  const $total1 = $('.grandtotal.p1');
+  const $total2 = $('.grandtotal.p2');
   // Had problems altering specific images but only finding the section that holds it.
   // let player = 1;
 
@@ -131,6 +145,13 @@ $(() => {
   }
 
   function rollDice() {
+    if (player === 1) {
+      $p1on.off();
+      $p1on.on('click', lockScore);
+    } else {
+      $p2on.off();
+      $p2on.on('click', lockScore);
+    }
     $('img').off();
     $('img').on('click', keepDice);
     rollsLeft = $rolls.text();
@@ -358,9 +379,38 @@ $(() => {
     let p1grandtotal = $('.p1').map(function() {
       return $(this).text();
     }).get();
+    if (bonusCalc(p1grandtotal) >= 63) {
+      $bonus1.text(35);
+      p1grandtotal.push(35);
+    } else {
+      $bonus1.text(0);
+      $bonus1.addClass('grey');
+    }
+    $upper1.text(bonusCalc(p1grandtotal));
     p1grandtotal = removeValue(p1grandtotal, '-');
     p1grandtotal = arraySum(p1grandtotal);
-
+    $total1.text(p1grandtotal);
+    let p2grandtotal = $('.p2').map(function() {
+      return $(this).text();
+    }).get();
+    if (bonusCalc(p2grandtotal) >= 63) {
+      $bonus2.text(35);
+      p2grandtotal.push(35);
+    } else {
+      $bonus2.text(0);
+      $bonus2.addClass('grey');
+    }
+    $upper2.text(bonusCalc(p2grandtotal));
+    p2grandtotal = removeValue(p2grandtotal, '-');
+    p2grandtotal = arraySum(p2grandtotal);
+    $total2.text(p2grandtotal);
+    if (p1grandtotal > p2grandtotal) {
+      $total1.attr('id', 'winner');
+      $total2.attr('id', 'loser');
+    } else {
+      $total2.attr('id', 'winner');
+      $total1.attr('id', 'loser');
+    }
   }
 
   function lockScore(e) { //Locks the score of the category you click, also changes players. It currently does an extra bit of everything but will be refactored later.
@@ -380,22 +430,19 @@ $(() => {
       $p1on.removeClass('green');
       $p1on.text(0);
       $p1on.off();
-      $p2on.on('click', lockScore);
     } else {
       player++;
       $p2on = $('.p2.on');
       $p2on.removeClass('green');
       $p2on.text(0);
       $p2on.off();
-      $p1on.on('click', lockScore);
     }
-    score++;
-    if (score === 3) {
+    turn++;
+    if (turn === 3) {
       tallyScores();
     }
   }
 
-  $p1on.on('click', lockScore);
   initialRoll();
 
 });
