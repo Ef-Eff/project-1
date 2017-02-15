@@ -101,11 +101,16 @@ $(() => {
   const $bonus2 = $('.bonus.p2');
   const $upper1 = $('.upper.p1');
   const $upper2 = $('.upper.p2');
+  // G-g-g-grand totals, the span for the actual final mega ultimate score.
+  const $total1 = $('.grandtotal.p1');
+  const $total2 = $('.grandtotal.p2');
 
-  // The scoreboard of each player, with class 'on' determining if that score category can be clicked on. Class is removed once it is clicked thus claiming that score and no longer allowing this var to find it.
-  let $p1on = $('.p1.on');
-  let $p2on = $('.p2.on');
-  // Score identifiers initialised to be assigned later based on the player.
+  // The scoreboard of each player containing the numbers you can claim for each category
+  // the 'on' class determines whether it can be used
+  // it is removed once it has been clicked, no longer allowing that category to be cashed in.
+  let $p1Scoreboard = $('.p1.on');
+  let $p2Scoreboard = $('.p2.on');
+  // Score identifiers assigned to be used later based on the player (see 'redifineValues()')
   let $ones = null;
   let $twos = null;
   let $threes = null;
@@ -119,8 +124,7 @@ $(() => {
   let $smallStraight = null;
   let $largeStraight = null;
   let $chance = null;
-  const $total1 = $('.grandtotal.p1');
-  const $total2 = $('.grandtotal.p2');
+
 
   //  DOM Function declaration block
   function generateDice() {     //Generate a random number, which sets the data attribute and image the same
@@ -130,7 +134,7 @@ $(() => {
     });
   }
 
-  function initialRoll() {
+  function initialRoll() { // Starts off the chain of events, happens as soon as the dom is loaded.
     const multiple = setInterval(() => { // A useless randomization of dice at the start of the game
       generateDice();
     }, 200);
@@ -138,6 +142,76 @@ $(() => {
       clearInterval(multiple);
       $rollButton.on('click', rollDice);
     }, 2000);
+  }
+
+  function storeDiceNumbers() {          // Makes the global array that stores dice data empty,
+    diceInPlay = [];              // pushes the data values (numbers corresponding to the dice face) in.
+    for (let i = 0; i < 5; i++) {
+      diceInPlay.push($playingDice.eq(i).attr('data-dice'));
+    }
+    diceInPlay = diceInPlay.sort(); // Sorts it for easier management.
+  }
+
+  function playerScoreboard(player) {
+    if (player === 1) {
+      $p1Scoreboard.off();
+      $p1Scoreboard.on('click', lockScoreCategory);
+    } else {
+      $p2Scoreboard.off();
+      $p2Scoreboard.on('click', lockScoreCategory);
+    }
+  }
+
+  function rollDice() {
+    playerScoreboard(player);
+    $playingDice.off();
+    $playingDice.on('click', keepDice);
+    rollsLeft = $rolls.text();
+    rollsLeft--;
+    $rolls.text(rollsLeft);
+    if (rollsLeft === 0) {
+      $.each($rollBoard.find($playingDice), (index, element) => {
+        const num = randomDice();
+        $(element).attr({'src': `images/${num}.png`, 'data-dice': num});
+      });
+      $rollButton.off();
+      $rolls.text('NOPE');
+      storeDiceNumbers();
+      checkScoring(player);
+    } else {
+      $.each($rollBoard.find($playingDice), (index, element) => {
+        const num = randomDice();
+        $(element).attr({'src': `images/${num}.png`, 'data-dice': num});
+      });
+      storeDiceNumbers();
+      checkScoring(player);
+    }
+  }
+
+
+  function keepDice(e) {           // Simply moves the dice from the rolling board
+    if (player === 1) {            // to one of the player boards, depending on current player.
+      $board1.append($(e.target)); // It also changes the event listener on the dice
+    } else {                       // so it can be sent back to the rolling board.
+      $board2.append($(e.target));
+    }
+    givaAwayDice();
+  }
+
+  function givaAwayDice() {
+    const $board1Dice = $board1.find($playingDice);
+    $board1Dice.off();
+    $board1Dice.on('click', pushToRollBoard);
+    const $board2Dice = $board2.find($playingDice);
+    $board2Dice.off();
+    $board2Dice.on('click', pushToRollBoard);
+  }
+
+  function pushToRollBoard(e) {
+    $rollBoard.append($(e.target));
+    const $img = $rollBoard.find($playingDice);
+    $img.off();
+    $img.on('click', keepDice);
   }
 
   function redifineValues(player) {   // Changes the variables depending on the player number
@@ -156,90 +230,15 @@ $(() => {
     $chance = $(`.p${player}.chance.on`);
   }
 
-  function playerScoreboard(player) {
-    if (player === 1) {
-      $p1on.off();
-      $p1on.on('click', lockScoreCategory);
-    } else {
-      $p2on.off();
-      $p2on.on('click', lockScoreCategory);
-    }
-  }
-
-  function rollDice() {
-    playerScoreboard(player);
-    $($playingDice).off();
-    $($playingDice).on('click', keepDice);
-    rollsLeft = $rolls.text();
-    rollsLeft--;
-    $rolls.text(rollsLeft);
-    if (rollsLeft === 0) {
-      $.each($rollBoard.find($($playingDice)), (index, element) => {
-        const num = randomDice();
-        $(element).attr({'src': `images/${num}.png`, 'data-dice': num});
-      });
-      $rollButton.off();
-      $rolls.text('NOPE');
-      pushArray();
-      checkScoring(player);
-    } else {
-      $.each($rollBoard.find($($playingDice)), (index, element) => {
-        const num = randomDice();
-        $(element).attr({'src': `images/${num}.png`, 'data-dice': num});
-      });
-      pushArray();
-      checkScoring(player);
-    }
-  }
-
-  function pushArray() {          // Makes the global array that stores dice data empty,
-    diceInPlay = [];              // pushes the data values (numbers corresponding to the dice face) in.
-    for (let i = 0; i < 5; i++) { // Sorts it for easier management.
-      diceInPlay.push($playingDice.eq(i).attr('data-dice'));
-    }
-    diceInPlay = diceInPlay.sort();
-  }
-
-  function disableBoards() {
-    const $board1img = $board1.find($($playingDice));
-    $board1img.off();
-    $board1img.on('click', (e) => {
-      $rollBoard.append($(e.target));
-      pushToRollBoard();
-    });
-    const $board2img = $board2.find($($playingDice));
-    $board2img.off();
-    $board2img.on('click', (e) => {
-      $rollBoard.append($(e.target));
-      pushToRollBoard();
-    });
-  }
-
-  function keepDice(e) {           // Really nice looking function (IMO) that simply moves the dice
-    if (player === 1) {            // to one of the boards, depending on player.
-      $board1.append($(e.target)); // It also changes the event listener on the dice
-    } else {                       // so it can be sent back using the clearboards function.
-      $board2.append($(e.target));
-    }
-    disableBoards();
-  }
-
-  function pushToRollBoard() {
-    const $img = $rollBoard.find($playingDice);
-    $img.off();
-    $img.on('click', keepDice);
-  }
-
   function checkScoring(player) {
-    // Reinitialising the values every time so that they don't accumulate and keep adding up.
+    // redefining the values every time so that they don't accumulate and keep adding up.
     one = two = three = four = five = six = threeKindCheck = fourKindCheck = 0;
 
     const sum = arraySum(diceInPlay); // The sum of numbers of the dice in play (duh)
     diceInPlay = arrayToInt(diceInPlay); // Turning the array of dice numbers to integers
     const filteredDice = removeDuplicates(diceInPlay); // Adding a filtered version where duplicates are removed for easier calculation of straights
-
-    redifineValues(player); // VERY IMPORTANT FUNCTION, takes the player value (global variable which will be 1 or 2) and reassigns the variables used to apply to either the player 1 or 2 scoreboard
-
+    // So that the variables used below apply to the correct player (player 1 or 2)
+    redifineValues(player);
     // Yahtzee (five of the same number)
     if (yahtzee(filteredDice)) {
       $yahtzee.addClass('green'); // Adds a class which highlights the button green (subject to change, colors area bit ugly right now). Not toggle incase it happens twice in a row which would turn it off. Same applies below.
@@ -275,7 +274,6 @@ $(() => {
     // Chance is always available, so it simply needs to show on click. Just a sum of all numbers
     $chance.addClass('green');
     $chance.text(sum);
-
     // Loop using the array of dice numbers to calculate scores for everything else
     diceInPlay.forEach(function(element, i, array) {
       const index = i;
@@ -333,7 +331,7 @@ $(() => {
         $threeKind.addClass('green');
         $threeKind.text(sum);
         threeKindCheck++;
-      } else if (!threeKindCheck && !$threeKind.attr('id')) {
+      } else if (!threeKindCheck) {
         $threeKind.removeClass('green');
         $threeKind.text(0);
       }
@@ -342,7 +340,7 @@ $(() => {
         $fourKind.addClass('green');
         $fourKind.text(sum);
         fourKindCheck++;
-      } else if (!fourKindCheck && !$fourKind.attr('id')) {
+      } else if (!fourKindCheck) {
         $fourKind.removeClass('green');
         $fourKind.text(0);
       }
@@ -350,10 +348,52 @@ $(() => {
   }
 
   function returnToRollBoard() {
-    if (player === 1) {                        // Finds the images stored in each board
+    if (player === 1) {                              // Finds the images stored in each board
       $rollBoard.append($board1.find($playingDice)); // returns them to the rolling board
-    } else {
+    } else {                                         // only bothers with player 2 if it isnt player 1's turn (Efficiency to the rescue!(?))
       $rollBoard.append($board2.find($playingDice));
+    }
+  }
+
+  function scoreboardClear() {
+    if (player === 1) {
+      player++; // Go to player 2
+      $playingDice.off(); // Make the dice not clickable untill the next players roll (So they don't steal our Yahtzee's). The dice would have also been returned to the rolling board.
+      $p1Scoreboard = $('.p1.on'); // So it doesnt effect categories that have removed the 'on' class
+      $p1Scoreboard.removeClass('green');
+      $p1Scoreboard.text(0);
+      $p1Scoreboard.off();
+    } else {
+      player--;
+      $playingDice.off();
+      $p2Scoreboard = $('.p2.on');
+      $p2Scoreboard.removeClass('green');
+      $p2Scoreboard.text(0);
+      $p2Scoreboard.off();
+    }
+  }
+
+  function rollButtonReset() {
+    $rolls.text(3);
+    $rollButton.off(); // Incase all rolls were not used, ensuring multiple event listeners aren't placed
+    $rollButton.on('click', rollDice);
+  }
+
+  function lockScoreCategory(e) { // Locks the score of the category you click, also changes players. It currently does an extra bit of everything but will be refactored later.
+    returnToRollBoard();
+    rollButtonReset();
+
+    $(e.target).attr('id', 'completed'); // Sets an id that changes the color
+    if ($(e.target).text() === '0') {
+      $(e.target).attr('id', 'fail');    // To showcase you failed yourself by claiming 0 points.
+    }
+    $(e.target).removeClass('on');  // Removes on, meaning it will no longer be located to update score calculations
+    $(e.target).off();              // Means you will no longer be able to click it.
+    scoreboardClear();
+
+    turn++;
+    if (turn === 26) { // If
+      tallyScores();
     }
   }
 
@@ -392,47 +432,6 @@ $(() => {
     } else {
       $total2.attr('id', 'winner');
       $total1.attr('id', 'loser');
-    }
-  }
-
-  function scoreboardClear() {
-    if (player === 1) {
-      player++;
-      $($playingDice).off();
-      $p1on = $('.p1.on');
-      $p1on.removeClass('green');
-      $p1on.text(0);
-      $p1on.off();
-    } else {
-      player--;
-      $p2on = $('.p2.on');
-      $p2on.removeClass('green');
-      $p2on.text(0);
-      $p2on.off();
-    }
-  }
-
-  function rollButtonReset() {
-    $rolls.text(3);
-    $rollButton.off(); // Incase all rolls were not used, ensuring multiple event listeners aren't placed
-    $rollButton.on('click', rollDice);
-  }
-
-  function lockScoreCategory(e) { // Locks the score of the category you click, also changes players. It currently does an extra bit of everything but will be refactored later.
-    returnToRollBoard();
-    rollButtonReset();
-
-    $(e.target).attr('id', 'completed'); // Sets an id that changes the color
-    if ($(e.target).text() === '0') {
-      $(e.target).attr('id', 'fail');    // To showcase you failed yourself by claiming 0 points.
-    }
-    $(e.target).removeClass('on');       // Removes on, meaning it is no longer active.
-
-    scoreboardClear();
-
-    turn++;
-    if (turn === 26) {
-      tallyScores();
     }
   }
 
