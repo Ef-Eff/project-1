@@ -3,14 +3,12 @@ body {
   text-align: center;
 }
 
-
-div.player1, div.player2, div.scrambler {
+div.player1, div.player2, div.rollBoard {
   position: absolute;
   width: 760px;
   border-radius: 5px;
   border: 2px solid black;
 }
-
 
 .scoreboard {
   float: right;
@@ -65,7 +63,7 @@ div.player2 {
   height: 150px;
 }
 
-.scrambler {
+.rollBoard {
   top: 55%;
   padding-top: 10px;
   left: 4%;
@@ -105,7 +103,6 @@ button {
   text-align: center;
 }
 
-
 #fail {
   background-color: yellow;
   font-weight: bold;
@@ -120,7 +117,6 @@ button {
   border-top: 1px solid black;
 }
 
-
 .grey {
   background-color: darkred;
 }
@@ -133,4 +129,9 @@ button {
 #loser {
   background-color: grey;
   font-weight: lighter;
+}
+
+button, .big, .on {
+  cursor: pointer;
+  cursor: hand;
 }
