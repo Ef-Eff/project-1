@@ -1,30 +1,35 @@
-body {
-  background-color: FireBrick;
-  text-align: center;
+* {
+  box-sizing: border-box;
 }
 
-div.player1, div.player2, div.rollBoard {
-  position: absolute;
-  width: 760px;
-  border-radius: 5px;
-  border: 2px solid black;
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: firebrick;
+  text-align: center;
 }
 
 .scoreboard {
   float: right;
   display: block;
-  margin-right: 30px;
-  margin-top: 30px;
+  margin-top: 1.25%;
+  margin-right: 2%;
   border-radius: 2px;
   background-color: red;
   border: 1px solid black;
   border-bottom: 0px;
+  height: 95%;
+  width: 30%;
 }
+
 .scoreboard > div {
   display: block;
   float: left;
-  width: 99px;
+  width: 30%;
   border: 1px solid black;
+  height: 100%;
 }
 
 .scoreboard > div > span {
@@ -33,52 +38,101 @@ div.player1, div.player2, div.rollBoard {
   border-bottom: 1px solid black;
   padding: 5px;
   transition: background-color .2s;
-  height: 20px;
+  height: 5.88235%;
+  line-height: 150%;
+}
+
+div.player1Container, div.player2Container, div.rollBoard {
+  position: fixed;
+  width: 60%;
+  padding: 1 1%;
+  left: 4%;
+  border: 2px solid black;
 }
 
 .big {
   display: inline-block;
-  padding: 1px;
+  padding: 2px;
   border-radius: 6px;
+  vertical-align: middle;
 }
 
-.small {
-  padding: 0px;
+div.player1Container {
+  background-color: orange;
+  bottom: 0;
+  height: 25%;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
 }
 
 div.player1 {
-  bottom: 0;
-  left: 4%;
-  padding-top: 10px;
+  width: 100%;
   background-color: red;
-  height: 150px;
+  height: 100%;
+  border-top: 2px solid black;
+  padding-top: 1%;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+div.player2Container {
+  background-color: orange;
+  top: 0;
+  height: 25%;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
 }
 
 div.player2 {
-  top: 0;
-  padding-top: 10px;
-  left: 4%;
-  padding-bottom: 10px;
+  width: 100%;
   background-color: red;
-  height: 150px;
+  height: 85%;
+  border-bottom: 2px solid black;
+  padding-bottom: 1%;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
-.rollBoard {
-  top: 55%;
-  padding-top: 10px;
-  left: 4%;
+div.rollBoard {
+  top: 45%;
   background-color: green;
-  transform: translate(0%, -50%);
-  height: 190px;
+  height: 25%;
+  line-height: 160px;
+  border-radius: 6px;
 }
 
-button {
-  display: block;
-  position: relative;
-  left: 47%;
-  transform: translate(-50%, 0%);
-  margin-left: 20px;
-  margin-bottom: 10px;
+.player-buttons {
+  display: inline-block;
+  position: absolute;
+  top: 35%;
+  left: 8%;
+  height: 10%;
+  width: 52%;
+}
+
+.player-buttons > div {
+  display: inline-block;
+  width: 33%;
+  height: 100%;
+  background-color: red;
+  border: 2px solid black;
+  border-bottom: 0px;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+}
+
+.rollButton > span {
+  font-size: 24px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.rollsleft > span {
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .green {
@@ -90,13 +144,31 @@ button {
   background-color: lightgreen;
 }
 
+.rollButton:focus {
+  background-color: black;
+}
+
+#p1 {
+  font-weight: bold;
+  padding: 6px;
+}
+
+#p2 {
+  position: absolute;
+  bottom: 0;
+  font-weight: bold;
+  padding-top: 8px;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
 #completed {
   font-weight: bold;
   background-color: orange;
 }
 
 #categories {
-  width: 123px;
+  width: 40%;
 }
 
 #score1 > span, #score2 > span {
@@ -104,13 +176,12 @@ button {
 }
 
 #fail {
-  background-color: yellow;
+  background-color: grey;
   font-weight: bold;
 }
 
 #p1, #p2 {
   display: block;
-  margin-bottom: 3px;
 }
 
 .split {
@@ -131,7 +202,55 @@ button {
   font-weight: lighter;
 }
 
-button, .big, .on {
+.rollButton, .big, .on {
   cursor: pointer;
   cursor: hand;
+}
+
+@media only screen and (max-height: 1024px) {
+  .big {
+    height: 115px;
+    width: 115px;
+  }
+}
+@media only screen and (max-height: 620px) {
+  .big {
+    height: 110px;
+    width: 110px;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    vertical-align: top;
+  }
+}
+@media only screen and (orientation: landscape) and (min-height: 360px) {
+  .scoreboard {
+    height: 100%;
+    margin-top: 0;
+    margin-right: 0;
+    width: 38%;
+  }
+  div.player1Container, div.player2Container, div.rollBoard {
+    width: 60%;
+    left: 1px;
+    height: 25%;
+  }
+}
+@media only screen and (orientation: portrait) {
+  .scoreboard {
+    height: 100%;
+    margin-top: 0;
+    margin-right: 0;
+    width: 38%;
+  }
+  div.player1Container, div.player2Container, div.rollBoard {
+    width: 60%;
+    left: 2px;
+    height: 20%;
+  }
+  .rollBoard {
+    top: 50%;
+  }
+  .scoreboard > div > span {
+    height: 5.9%;
+  }
 }

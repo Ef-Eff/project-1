@@ -91,10 +91,13 @@ $(() => {
   // The where each player can hold dice so that it doesn't reroll
   const $board1 = $('div.player1');
   const $board2 = $('div.player2');
+  let $board1Dice = null;
+  let $board2Dice = null;
+  let $rollBoardDice = null; // I do this so I don't assign them as constants in a function, don't know if necessary
   const $rollBoard = $('.rollBoard'); // The area where the dice can be rolled
-  const $rollButton = $('button'); // The button to roll it
+  const $rollButton = $('.rollButton'); // The button to roll it
   const $rolls = $('#rolls'); // The span that holds the text for amount of rolls left
-  let rollsLeft = $rolls.text();
+  let rollsLeft = null;
 
    // The specific spans around the bonus and upper totals, as they are only calculated at the end.
   const $bonus1 = $('.bonus.p1');
@@ -110,7 +113,7 @@ $(() => {
   // it is removed once it has been clicked, no longer allowing that category to be cashed in.
   let $p1Scoreboard = $('.p1.on');
   let $p2Scoreboard = $('.p2.on');
-  // Score identifiers assigned to be used later based on the player (see 'redifineValues()')
+  // Score identifiers assigned to be used later based on the player (see 'redefineValues()')
   let $ones = null;
   let $twos = null;
   let $threes = null;
@@ -125,20 +128,21 @@ $(() => {
   let $largeStraight = null;
   let $chance = null;
 
-
   //  DOM Function declaration block
   function generateDice() {     //Generate a random number, which sets the data attribute and image the same
-    $.each($playingDice, (index, element) => {
+    $.each($rollBoard.find($playingDice), (index, element) => {
       const num = randomDice(); // Sets this every time so that it generates a new number
       $(element).attr({'src': `images/${num}.png`, 'data-dice': num});
     });
   }
-
-  function initialRoll() { // Starts off the chain of events, happens as soon as the dom is loaded.
+  // Starts off the chain of events, happens as soon as the dom is loaded.
+  function initialRoll() {
+    generateDice();
+    $playingDice.addClass('spinSPINSPIN');
     const multiple = setInterval(() => { // A useless randomization of dice at the start of the game
       generateDice();
     }, 200);
-    setTimeout(() => {                   // Stops the dice rolling and sets the initial event listener
+    setTimeout(() => {                   // Stops the dice rolling and sets the first event listener
       clearInterval(multiple);
       $rollButton.on('click', rollDice);
     }, 2000);
@@ -152,42 +156,36 @@ $(() => {
     diceInPlay = diceInPlay.sort(); // Sorts it for easier management.
   }
 
-  function playerScoreboard(player) {
-    if (player === 1) {
+  function playerScoreboard(player) { // Turns on scoring for each player
+    if (player === 1) {               // turns it off first to ensure it doesnt apply two listeners
       $p1Scoreboard.off();
-      $p1Scoreboard.on('click', lockScoreCategory);
+      $p1Scoreboard.on('click', lockScoreCategory); // The function that allows the score to be claimed
     } else {
       $p2Scoreboard.off();
       $p2Scoreboard.on('click', lockScoreCategory);
     }
   }
 
-  function rollDice() {
-    playerScoreboard(player);
+  function rollDice() { // Ran when the roll button is pressed, rolls the dice only in the rolling area
+    playerScoreboard(player); // Allows the scoreboard of the current player to be clickable.
     $playingDice.off();
     $playingDice.on('click', keepDice);
+    // Sets the variable rollsLeft to the text, reduces it by 1 then sets that as the text.
     rollsLeft = $rolls.text();
     rollsLeft--;
     $rolls.text(rollsLeft);
     if (rollsLeft === 0) {
-      $.each($rollBoard.find($playingDice), (index, element) => {
-        const num = randomDice();
-        $(element).attr({'src': `images/${num}.png`, 'data-dice': num});
-      });
       $rollButton.off();
       $rolls.text('NOPE');
-      storeDiceNumbers();
+      generateDice();
+      storeDiceNumbers();  // Weird block where I have to run the functions again, could be fixed.
       checkScoring(player);
     } else {
-      $.each($rollBoard.find($playingDice), (index, element) => {
-        const num = randomDice();
-        $(element).attr({'src': `images/${num}.png`, 'data-dice': num});
-      });
+      generateDice();
       storeDiceNumbers();
       checkScoring(player);
     }
   }
-
 
   function keepDice(e) {           // Simply moves the dice from the rolling board
     if (player === 1) {            // to one of the player boards, depending on current player.
@@ -195,26 +193,26 @@ $(() => {
     } else {                       // so it can be sent back to the rolling board.
       $board2.append($(e.target));
     }
-    givaAwayDice();
+    giveAwayDice();
   }
 
-  function givaAwayDice() {
-    const $board1Dice = $board1.find($playingDice);
+  function giveAwayDice() {
+    $board1Dice = $board1.find($playingDice); //
     $board1Dice.off();
     $board1Dice.on('click', pushToRollBoard);
-    const $board2Dice = $board2.find($playingDice);
+    $board2Dice = $board2.find($playingDice);
     $board2Dice.off();
     $board2Dice.on('click', pushToRollBoard);
   }
 
   function pushToRollBoard(e) {
     $rollBoard.append($(e.target));
-    const $img = $rollBoard.find($playingDice);
-    $img.off();
-    $img.on('click', keepDice);
+    $rollBoardDice = $rollBoard.find($playingDice);
+    $rollBoardDice.off();
+    $rollBoardDice.on('click', keepDice);
   }
 
-  function redifineValues(player) {   // Changes the variables depending on the player number
+  function redefineValues(player) {   // Changes the variables depending on the player number
     $ones = $(`.p${player}.ones.on`); // 1 = p1, 2 = p2, player 1 and 2 respectively
     $twos = $(`.p${player}.twos.on`);
     $threes = $(`.p${player}.threes.on`);
@@ -238,7 +236,7 @@ $(() => {
     diceInPlay = arrayToInt(diceInPlay); // Turning the array of dice numbers to integers
     const filteredDice = removeDuplicates(diceInPlay); // Adding a filtered version where duplicates are removed for easier calculation of straights
     // So that the variables used below apply to the correct player (player 1 or 2)
-    redifineValues(player);
+    redefineValues(player);
     // Yahtzee (five of the same number)
     if (yahtzee(filteredDice)) {
       $yahtzee.addClass('green'); // Adds a class which highlights the button green (subject to change, colors area bit ugly right now). Not toggle incase it happens twice in a row which would turn it off. Same applies below.
@@ -361,7 +359,7 @@ $(() => {
       $playingDice.off(); // Make the dice not clickable untill the next players roll (So they don't steal our Yahtzee's). The dice would have also been returned to the rolling board.
       $p1Scoreboard = $('.p1.on'); // So it doesnt effect categories that have removed the 'on' class
       $p1Scoreboard.removeClass('green');
-      $p1Scoreboard.text(0);
+      $p1Scoreboard.text(0); // I could put it all on one line, but this maybe looks cleaner idk -_-?
       $p1Scoreboard.off();
     } else {
       player--;
@@ -392,15 +390,19 @@ $(() => {
     scoreboardClear();
 
     turn++;
-    if (turn === 26) { // If
-      tallyScores();
+    if (turn === 26) { // Amount of turns NECESSARY to complete game. No more no less. (26, 13 turns each)
+      tallyScores(); // Final function to decide the chicken dinner (winner winner)
     }
   }
 
-  function tallyScores() {
+  function tallyScores() {  // I really dont see a way to not do everything twice.
     let p1grandtotal = $('.p1').map(function() {
       return $(this).text();
     }).get();
+    let p2grandtotal = $('.p2').map(function() {
+      return $(this).text();
+    }).get();
+
     if (bonusCalc(p1grandtotal) >= 63) {
       $bonus1.text(35);
       p1grandtotal.push(35);
@@ -408,13 +410,6 @@ $(() => {
       $bonus1.text(0);
       $bonus1.addClass('grey');
     }
-    $upper1.text(bonusCalc(p1grandtotal));
-    p1grandtotal = removeValue(p1grandtotal, '-');
-    p1grandtotal = arraySum(p1grandtotal);
-    $total1.text(p1grandtotal);
-    let p2grandtotal = $('.p2').map(function() {
-      return $(this).text();
-    }).get();
     if (bonusCalc(p2grandtotal) >= 63) {
       $bonus2.text(35);
       p2grandtotal.push(35);
@@ -422,10 +417,18 @@ $(() => {
       $bonus2.text(0);
       $bonus2.addClass('grey');
     }
+
+    $upper1.text(bonusCalc(p1grandtotal));
+    p1grandtotal = removeValue(p1grandtotal, '-');
+    p1grandtotal = arraySum(p1grandtotal);
+    $total1.text(p1grandtotal);
+
     $upper2.text(bonusCalc(p2grandtotal));
     p2grandtotal = removeValue(p2grandtotal, '-');
     p2grandtotal = arraySum(p2grandtotal);
     $total2.text(p2grandtotal);
+
+    // Really underwhelming win declaration. Just different color grand total scores.
     if (p1grandtotal > p2grandtotal) {
       $total1.attr('id', 'winner');
       $total2.attr('id', 'loser');
