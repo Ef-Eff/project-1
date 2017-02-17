@@ -98,6 +98,7 @@ $(() => {
   const $rollButton = $('.rollButton'); // The button to roll it
   const $rolls = $('#rolls'); // The span that holds the text for amount of rolls left
   let rollsLeft = null;
+  const $resetButton = $('#reset');
 
    // The specific spans around the bonus and upper totals, as they are only calculated at the end.
   const $bonus1 = $('.bonus.p1');
@@ -138,7 +139,6 @@ $(() => {
   // Starts off the chain of events, happens as soon as the dom is loaded.
   function initialRoll() {
     generateDice();
-    $playingDice.addClass('spinSPINSPIN');
     const multiple = setInterval(() => { // A useless randomization of dice at the start of the game
       generateDice();
     }, 200);
@@ -176,7 +176,7 @@ $(() => {
     $rolls.text(rollsLeft);
     if (rollsLeft === 0) {
       $rollButton.off();
-      $rolls.text('NOPE');
+      $rolls.text(0);
       generateDice();
       storeDiceNumbers();  // Weird block where I have to run the functions again, could be fixed.
       checkScoring(player);
@@ -390,7 +390,7 @@ $(() => {
     scoreboardClear();
 
     turn++;
-    if (turn === 26) { // Amount of turns NECESSARY to complete game. No more no less. (26, 13 turns each)
+    if (turn === 26) { // Amount of turns NECESSARY to complete game. No more no less. (26, 13 turns each. Can obviously be altered to give shorter games)
       tallyScores(); // Final function to decide the chicken dinner (winner winner)
     }
   }
@@ -408,14 +408,14 @@ $(() => {
       p1grandtotal.push(35);
     } else {
       $bonus1.text(0);
-      $bonus1.addClass('grey');
+      $bonus1.attr('id', 'loser');
     }
     if (bonusCalc(p2grandtotal) >= 63) {
       $bonus2.text(35);
       p2grandtotal.push(35);
     } else {
       $bonus2.text(0);
-      $bonus2.addClass('grey');
+      $bonus2.attr('id', 'loser');
     }
 
     $upper1.text(bonusCalc(p1grandtotal));
@@ -438,7 +438,32 @@ $(() => {
     }
   }
 
+  function resetEverything() { // Self explanatory right? If there are any problems, it might be here
+    diceInPlay = [];
+    $.each($('.reset'), (index, element) => {
+      $(element).removeClass('on green');
+      $(element).attr('id', '');
+      $(element).addClass('on'); // On seperate lines because looks
+      $(element).text(0);
+      $(element).off();
+    });
+    turn = 0;
+    rollsLeft = 3;
+    $rolls.text(rollsLeft);
+    returnToRollBoard();
+    $('.big').off();
+    player = 1;
+    $bonus1.text('-');
+    $bonus2.text('-');
+    $total1.attr('id', '');
+    $total2.attr('id', '');
+    $total1.text('-');
+    $total2.text('-');
+    $upper1.text('-');
+    $upper2.text('-');
+    initialRoll();
+  }
   // Starts the game :)
   initialRoll();
-
+  $resetButton.on('click', resetEverything);
 });

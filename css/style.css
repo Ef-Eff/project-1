@@ -112,7 +112,7 @@ div.rollBoard {
 
 .player-buttons > div {
   display: inline-block;
-  width: 33%;
+  width: 30%;
   height: 100%;
   background-color: red;
   border: 2px solid black;
@@ -134,7 +134,12 @@ div.rollBoard {
   top: 50%;
   transform: translate(-50%, -50%);
 }
-
+#reset > span {
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 .green {
   background-color: green;
   transition: background-color .2s;
@@ -202,12 +207,30 @@ div.rollBoard {
   font-weight: lighter;
 }
 
-.rollButton, .big, .on {
+.rollButton, .big, .on, #reset{
   cursor: pointer;
   cursor: hand;
 }
+@media only screen and (max-width: 980px) {
+  .scoreboard {
+    height: 100%;
+    margin-top: 0;
+    margin-right: 0;
+    width: 38%;
+  }
+  div.player1Container, div.player2Container, div.rollBoard {
+    left: 1px;
+  }
+  .player-buttons {
+    left: 5%;
+  }
+  .big {
+    height: 90px;
+    width: 10px;
+  }
 
-@media only screen and (max-height: 1024px) {
+}
+@media only screen and (max-height: 980px) {
   .big {
     height: 115px;
     width: 115px;
@@ -222,7 +245,7 @@ div.rollBoard {
     vertical-align: top;
   }
 }
-@media only screen and (orientation: landscape) and (min-height: 360px) {
+@media only screen and (orientation: landscape) and (max-height: 560px) {
   .scoreboard {
     height: 100%;
     margin-top: 0;
@@ -233,6 +256,21 @@ div.rollBoard {
     width: 60%;
     left: 1px;
     height: 25%;
+  }
+  .big {
+    height: 90px;
+    width: 90px;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    vertical-align: top;
+  }
+  div.rollBoard {
+    width: 55%;
+    left: 2%;
+  }
+  .player-buttons {
+    width: 45%;
+    left: 6%;
   }
 }
 @media only screen and (orientation: portrait) {
