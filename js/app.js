@@ -197,7 +197,7 @@ $(() => {
   }
 
   function giveAwayDice() {
-    $board1Dice = $board1.find($playingDice); //
+    $board1Dice = $board1.find($playingDice);
     $board1Dice.off();
     $board1Dice.on('click', pushToRollBoard);
     $board2Dice = $board2.find($playingDice);
