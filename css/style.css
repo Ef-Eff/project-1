@@ -12,6 +12,7 @@ body {
 }
 
 .scoreboard {
+  font-weight: bold;
   float: right;
   display: block;
   margin-top: 1.25%;
