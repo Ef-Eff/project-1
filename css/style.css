@@ -7,7 +7,7 @@ html, body {
 }
 
 body {
-  background-color: yellow;
+  background-color: rgb(180,0,0);
   text-align: center;
 }
 
@@ -17,7 +17,7 @@ body {
   margin-top: 1.25%;
   margin-right: 2%;
   border-radius: 2px;
-  background-color: rgb(180,0,0);
+  background-color: #ef0000;
   border: 1px solid black;
   border-bottom: 0px;
   height: 95%;
@@ -67,7 +67,7 @@ div.player1Container {
 
 div.player1 {
   width: 100%;
-  background-color: #ef0000;
+  background-color: #e50000;
   height: 100%;
   border-top: 2px solid black;
   padding-top: 1%;
@@ -85,7 +85,7 @@ div.player2Container {
 
 div.player2 {
   width: 100%;
-  background-color: #ef0000;
+  background-color: #e50000;
   height: 85%;
   border-bottom: 2px solid black;
   padding-bottom: 1%;
@@ -114,7 +114,7 @@ div.rollBoard {
   display: inline-block;
   width: 30%;
   height: 100%;
-  background-color: #ef0000;
+  background-color: #e50000;
   border: 2px solid black;
   border-bottom: 0px;
   border-top-right-radius: 4px;
