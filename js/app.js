@@ -146,6 +146,7 @@ $(() => {
       clearInterval(multiple);
       $rollButton.on('click', rollDice);
     }, 2000);
+    $resetButton.on('click', resetEverything);
   }
 
   function storeDiceNumbers() {          // Makes the global array that stores dice data empty,
@@ -167,24 +168,36 @@ $(() => {
   }
 
   function rollDice() { // Ran when the roll button is pressed, rolls the dice only in the rolling area
-    playerScoreboard(player); // Allows the scoreboard of the current player to be clickable.
     $playingDice.off();
-    $playingDice.on('click', keepDice);
     // Sets the variable rollsLeft to the text, reduces it by 1 then sets that as the text.
     rollsLeft = $rolls.text();
     rollsLeft--;
     $rolls.text(rollsLeft);
-    if (rollsLeft === 0) {
+    if (rollsLeft <= 0) {
       $rollButton.off();
       $rolls.text(0);
-      generateDice();
-      storeDiceNumbers();  // Weird block where I have to run the functions again, could be fixed.
-      checkScoring(player);
-    } else {
-      generateDice();
-      storeDiceNumbers();
-      checkScoring(player);
     }
+    const timer = setInterval(() => { // A useless randomization of dice at the start of the game
+      generateDice();
+    }, 50);
+    setTimeout(() => { // A useless randomization of dice at the start of the game
+      clearInterval(timer)
+    }, 500);
+    const timer2 = setInterval(() => { // A useless randomization of dice at the start of the game
+      generateDice();
+    }, 100);
+    setTimeout(() => { // A useless randomization of dice at the start of the game
+      clearInterval(timer2)
+    }, 1000);
+    const timer3 = setInterval(() => { // A useless randomization of dice at the start of the game
+      generateDice();
+    }, 250);
+    setTimeout(() => { // A useless randomization of dice at the start of the game
+      clearInterval(timer3)
+    }, 1500);
+    storeDiceNumbers();  // Weird block where I have to run the functions again, could be fixed.
+    checkScoring(player);
+    $playingDice.on('click', keepDice);
   }
 
   function keepDice(e) {           // Simply moves the dice from the rolling board
@@ -439,6 +452,7 @@ $(() => {
   }
 
   function resetEverything() { // Self explanatory right? If there are any problems, it might be here
+    $resetButton.off();
     diceInPlay = [];
     $.each($('.reset'), (index, element) => {
       $(element).removeClass('on green');
@@ -465,5 +479,4 @@ $(() => {
   }
   // Starts the game :)
   initialRoll();
-  $resetButton.on('click', resetEverything);
 });

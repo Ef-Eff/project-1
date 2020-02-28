@@ -21,7 +21,7 @@ Yahtzee is a board game by Hasbro that can be played alone or with multiple play
 
 Each player has 13 turns each, as they must score after every turn, thus the harder to get categories (Full House etc.) are best picked off early. While this game can be mostly luck, strategy comes into play when considering categories such as Four of a Kind, as they are an accumulated score of the four dice you have.
 
-For more info on the game, you can visit the [official rules page](http://www.yahtzee.org.uk/rules.html yahtzee.org).
+For more info on the game, you can visit the [official rules page](http://www.yahtzee.org.uk/rules.html).
 
 #### Approach / How it works
 
